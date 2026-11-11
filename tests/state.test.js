@@ -7,12 +7,14 @@ import { parseHash, serializeListState } from '../js/state.js';
 describe('parseHash — 기본 상태', () => {
   it('빈 문자열 → 목록 기본 상태', () => {
     assert.deepStrictEqual(parseHash(''), {
-      view: 'list', keyword: '', sourceIds: [], period: 'all', page: 1,
+      view: 'list', keyword: '', sourceIds: [], topics: [], period: 'all', page: 1,
+      sort: 'newest', cols: 1, customFrom: '', customTo: '',
     });
   });
   it('#/ → 목록 기본 상태', () => {
     assert.deepStrictEqual(parseHash('#/'), {
-      view: 'list', keyword: '', sourceIds: [], period: 'all', page: 1,
+      view: 'list', keyword: '', sourceIds: [], topics: [], period: 'all', page: 1,
+      sort: 'newest', cols: 1, customFrom: '', customTo: '',
     });
   });
 });
@@ -50,7 +52,8 @@ describe('parseHash — 복합 상태', () => {
   it('#/?q=수강정정&src=haksa&period=3m&page=2', () => {
     const r = parseHash('#/?q=%EC%88%98%EA%B0%95%EC%A0%95%EC%A0%95&src=haksa&period=3m&page=2');
     assert.deepStrictEqual(r, {
-      view: 'list', keyword: '수강정정', sourceIds: ['haksa'], period: '3m', page: 2,
+      view: 'list', keyword: '수강정정', sourceIds: ['haksa'], topics: [], period: '3m', page: 2,
+      sort: 'newest', cols: 1, customFrom: '', customTo: '',
     });
   });
   it('복수 출처 src=haksa,dept', () => {

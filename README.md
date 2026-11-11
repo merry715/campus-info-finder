@@ -42,9 +42,17 @@
 | F8 | 샘플 데이터 고지 | 모든 화면 상단 상시 배너 | 구현 |
 | F9 | 기본 접근성 | 키보드 탐색, 보이는 포커스, label, fieldset/legend, aria-live, heading 구조 | 구현 |
 
-**후순위(미구현):** 기간 직접 지정, 스크롤·포커스 복원, 소개 화면, 검색어 하이라이트
+**후순위(미구현):** 스크롤·포커스 복원, 소개 화면, 검색어 하이라이트
 
 **제외:** 실제 API·크롤링·서버·DB, 로그인, 생성형 AI 추천, 모바일 전용 UI
+
+### P16 추가 기능
+
+| 기능 | 내용 |
+|---|---|
+| 페이지 번호 최대 10개 단위 표시 | 현재 페이지가 속한 그룹(1~10, 11~20, …)의 번호만 표시. 이전/다음 이동 시 그룹 자동 전환 |
+| 총 결과 수·페이지 수 표시 | 목록 헤더에 `총 N건 · N페이지` 형태로 현재 필터 결과 기준 동적 표시 |
+| 중요 공지 패널 구조 지원 | `isPinned: true` 게시물이 있으면 오른쪽 패널에 별도 표시, 접기/펼치기 가능. **검증된 고정 공지 데이터가 제공될 경우 별도 패널로 표시하도록 구조와 CSS를 구현해 두었으며, 현재는 실제 데이터에 `isPinned: true` 항목이 없어 패널이 표시되지 않음** |
 
 ---
 
@@ -132,9 +140,9 @@ npx serve .
 node --test
 ```
 
-**P09 기준 결과: 98 tests, 98 pass, 0 fail**
+**P16 기준 결과: 284 tests, 284 pass, 0 fail**
 
-테스트 대상: `js/search.js` 순수 함수(keyword/source/period 필터, paginate, getTotalPages), `js/state.js` (parseHash, serializeListState), 샘플 데이터 무결성, T1~T4 로직 검증
+테스트 대상: `js/search.js` 순수 함수(keyword/source/period/topic 필터, paginate, getTotalPages, getVisiblePageRange, splitPinnedItems), `js/state.js` (parseHash, serializeListState), 샘플 데이터 무결성, T1~T4 로직 검증
 
 ---
 

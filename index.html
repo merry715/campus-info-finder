@@ -15,10 +15,10 @@
     <div class="container">
       <p class="site-title">캠퍼스 정보 통합 탐색 <span class="site-title__note">HCI 프로토타입</span></p>
     </div>
-    <!-- F8 샘플 데이터 고지: 모든 화면에 항상 표시한다. 삭제·숨김 금지 (CLAUDE.md 0절) -->
-    <section class="sample-notice" aria-label="샘플 데이터 안내">
+    <!-- F8 프로토타입 안내 배너: 모든 화면 상단에 항상 표시한다. 삭제·숨김 금지 (CLAUDE.md 0절) -->
+    <section class="sample-notice" aria-label="프로토타입 안내">
       <div class="container">
-        <p class="sample-notice__text"><strong class="sample-notice__title">샘플 데이터 안내</strong> 이 사이트의 모든 게시물은 수업 과제를 위해 만든 샘플 데이터입니다. 실제 학교 시스템과 연결되어 있지 않으며, 실제 공지 내용이 아닙니다. 샘플 기준일: <span id="sample-ref-date">2026-11-10</span></p>
+        <p class="sample-notice__text"><strong class="sample-notice__title">프로토타입 안내</strong> HCI 과제를 위한 프로토타입입니다. 국립목포대학교 홈페이지에 공개된 게시글을 바탕으로 구성했으며, 게시글 본문은 탐색 실험을 위해 요약하여 제공합니다. 실시간 연동 서비스가 아니므로 최신·정확한 정보와 첨부파일은 원문을 확인해 주세요. 게시글 수집 기준일: <span id="sample-ref-date">2026-11-11</span></p>
       </div>
     </section>
   </header>
@@ -27,23 +27,57 @@
 
     <!-- 목록 화면 (F1~F4) -->
     <div id="list-view">
-      <!-- 키워드 검색 (F3) -->
-      <form class="search-form" id="search-form" role="search">
-        <label for="search-input" class="search-form__label">키워드 검색</label>
-        <div class="search-form__row">
-          <input type="search" id="search-input" class="search-form__input"
-                 placeholder="제목, 요약, 본문에서 검색" autocomplete="off">
-          <button type="submit" class="search-form__btn">검색</button>
+      <!-- 4셀 그리드: 서비스 아이덴티티·검색 폼(1행) + 필터 사이드바·목록(2행) -->
+      <div class="page-grid">
+
+        <!-- 서비스 아이덴티티 (1행 왼쪽) -->
+        <div class="service-identity">
+          <svg class="service-id-icon" width="36" height="36" viewBox="0 0 36 36" fill="none" aria-hidden="true" focusable="false">
+            <!-- 문서 묶음 -->
+            <rect x="2" y="8" width="16" height="20" rx="2" fill="currentColor" opacity="0.18"/>
+            <rect x="5" y="5" width="16" height="20" rx="2" fill="currentColor" opacity="0.42"/>
+            <rect x="8" y="2" width="16" height="20" rx="2" fill="currentColor"/>
+            <rect x="12" y="7" width="8" height="1.5" rx="0.75" fill="white"/>
+            <rect x="12" y="11" width="8" height="1.5" rx="0.75" fill="white"/>
+            <rect x="12" y="15" width="5" height="1.5" rx="0.75" fill="white"/>
+            <!-- 돋보기 -->
+            <circle cx="26" cy="27" r="6" stroke="currentColor" stroke-width="2.5" fill="none"/>
+            <line x1="30.5" y1="31" x2="33.5" y2="34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <span class="service-id-name">캠퍼스 정보 찾기</span>
+          <div class="mnu-context">
+            <img src="assets/mnu-symbol.png" alt="국립목포대학교 심벌" class="mnu-symbol" width="20" height="20">
+            <span>국립목포대학교 공개 정보 기반</span>
+          </div>
         </div>
-      </form>
 
-      <!-- 2단 레이아웃: 필터 사이드바 + 목록 -->
-      <div class="content-layout">
+        <!-- 키워드 검색 (F3, 1행 오른쪽) -->
+        <form class="search-form" id="search-form" role="search">
+          <label for="search-input" class="search-form__label">키워드 검색</label>
+          <div class="search-form__row">
+            <div class="search-form__input-wrap">
+              <input type="search" id="search-input" class="search-form__input"
+                     placeholder="제목, 내용, 작성자에서 검색" autocomplete="off"
+                     role="combobox" aria-expanded="false"
+                     aria-autocomplete="list" aria-controls="suggestion-list"
+                     aria-haspopup="listbox">
+              <ul role="listbox" id="suggestion-list" class="suggestion-list" hidden
+                  aria-label="제목 검색 제안"></ul>
+            </div>
+            <button type="submit" class="search-form__btn">검색</button>
+          </div>
+        </form>
 
-        <!-- 필터 사이드바 (F4) -->
+        <!-- 필터 사이드바 (F4, 2행 왼쪽) -->
         <aside class="filter-sidebar" aria-label="검색 필터">
           <fieldset class="filter-group">
-            <legend class="filter-group__legend">출처</legend>
+            <legend class="filter-group__legend">주제</legend>
+            <ul class="filter-group__list" id="topic-filter-list">
+              <!-- app.js로 렌더링 -->
+            </ul>
+          </fieldset>
+          <fieldset class="filter-group">
+            <legend class="filter-group__legend">원본 출처</legend>
             <ul class="filter-group__list" id="source-filter-list">
               <!-- app.js로 렌더링 -->
             </ul>
@@ -56,34 +90,47 @@
           </fieldset>
         </aside>
 
-        <!-- 목록 영역 -->
+        <!-- 목록 영역 (2행 오른쪽) -->
         <div class="results-panel">
-          <!-- 목록 헤더 -->
-          <div class="list-header">
-            <h1 id="list-heading" tabindex="-1" class="list-heading">통합 정보 목록</h1>
-            <div class="list-meta">
-              <span id="result-count" aria-live="polite" aria-atomic="true" class="list-count"></span>
-              <span class="list-sort" aria-label="정렬 기준: 최신순">최신순</span>
+          <!-- 메인 결과 영역 -->
+          <div class="main-results">
+            <!-- 목록 헤더 -->
+            <div class="list-header">
+              <h1 id="list-heading" tabindex="-1" class="list-heading">통합 정보 목록</h1>
+              <div class="list-meta">
+                <span id="result-count" aria-live="polite" aria-atomic="true" class="list-count"></span>
+                <div class="list-controls">
+                  <div class="list-sort-control" id="sort-control"><!-- app.js로 렌더링 --></div>
+                  <div class="list-view-toggle" id="view-toggle" role="group"><!-- app.js로 렌더링 --></div>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <!-- 적용 중인 조건 칩 (F4) -->
-          <div class="active-filters" id="active-filters" aria-label="적용 중인 필터 조건">
-            <!-- app.js로 렌더링 -->
-          </div>
+            <!-- 적용 중인 조건 칩 (F4) -->
+            <div class="active-filters" id="active-filters" aria-label="적용 중인 필터 조건">
+              <!-- app.js로 렌더링 -->
+            </div>
 
-          <!-- 게시물 목록 -->
-          <ul class="item-list" id="item-list" aria-label="통합 정보 목록">
-            <!-- app.js로 렌더링 -->
-          </ul>
+            <!-- 게시물 목록 -->
+            <ul class="item-list" id="item-list" aria-label="통합 정보 목록">
+              <!-- app.js로 렌더링 -->
+            </ul>
 
-          <!-- 결과 없음 (F7 · P06): app.js로 렌더링 -->
-          <div class="empty-state" id="empty-state" hidden></div>
+            <!-- 결과 없음 (F7 · P06): app.js로 렌더링 -->
+            <div class="empty-state" id="empty-state" hidden></div>
 
-          <!-- 페이지네이션 -->
-          <nav class="pagination" id="pagination" aria-label="페이지 이동">
-            <!-- app.js로 렌더링 -->
-          </nav>
+            <!-- 페이지네이션 -->
+            <nav class="pagination" id="pagination" aria-label="페이지 이동">
+              <!-- app.js로 렌더링 -->
+            </nav>
+            <!-- 페이지 직접 이동 (P11) -->
+            <div class="pagination-jump" id="pagination-jump" hidden>
+              <!-- app.js로 렌더링 -->
+            </div>
+          </div><!-- /.main-results -->
+
+          <!-- 중요 공지 패널 (P16): isPinned=true 항목이 있을 때만 표시. app.js로 렌더링 -->
+          <aside class="pinned-panel" id="pinned-panel" hidden aria-label="고정 게시글"></aside>
         </div>
 
       </div>
