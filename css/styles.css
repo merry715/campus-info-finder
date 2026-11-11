@@ -1,0 +1,792 @@
+/*
+ * 캠퍼스 정보 통합 탐색 — 기본 스타일 (P01, P09 개선)
+ * 색·간격·글꼴은 아래 변수로만 관리한다. 본격적인 화면 디자인은 P03 이후에 추가한다.
+ * 포커스 표시와 샘플 고지 배너는 접근성·정직성 기준이므로 약하게 바꾸지 않는다 (CLAUDE.md 0·5절).
+ */
+
+:root {
+  /* 색: 흰 배경 기준 본문 대비 4.5:1 이상 */
+  --color-bg: #ffffff;
+  --color-surface: #f3f5f8;
+  --color-surface-hover: #f7faff;  /* 카드 hover 시 미세한 파랑 조 */
+  --color-text: #1c2533;        /* 흰 배경 대비 약 15:1 */
+  --color-text-muted: #4a5568;  /* 흰 배경 대비 약 7.5:1 */
+  --color-border: #d5dbe3;
+  --color-link: #1d4fb8;
+  --color-link-hover: #163fa0;
+  --color-focus: #1d4fb8;
+  --color-notice-bg: #fff4d1;
+  --color-notice-border: #c99a1d;
+  --color-notice-text: #4d3600;  /* 배너 배경 대비 약 10:1 */
+
+  /* 글꼴: 외부 웹 글꼴 없이 운영체제 한글 글꼴 사용 */
+  --font-sans: system-ui, -apple-system, "Segoe UI", "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-base-lg: 1.0625rem;  /* 목록 카드 제목 전용 */
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --leading: 1.6;
+  --leading-relaxed: 1.75;
+
+  /* 간격 */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --container-width: 72rem;
+  --radius: 4px;
+  --radius-lg: 6px;
+  --focus-ring: 3px solid var(--color-focus);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.07);
+
+  /* 출처 배지 색 (P03) — 텍스트 라벨과 함께 사용, 색만으로 구분 금지 (CLAUDE.md 5절) */
+  /* 각 조합은 배지 배경 대비 본문 텍스트 대비 4.5:1 이상을 충족한다 */
+  --source-haksa-bg:    #dbeafe; --source-haksa-text:   #1e3a8a; --source-haksa-bd:   #93c5fd;
+  --source-general-bg:  #dcfce7; --source-general-text: #14532d; --source-general-bd: #86efac;
+  --source-dept-bg:     #fef9c3; --source-dept-text:    #78350f; --source-dept-bd:    #fde047;
+  --source-scholar-bg:  #f3e8ff; --source-scholar-text: #581c87; --source-scholar-bd: #d8b4fe;
+  --source-career-bg:   #ffedd5; --source-career-text:  #7c2d12; --source-career-bd:  #fdba74;
+  --source-program-bg:  #fce7f3; --source-program-text: #831843; --source-program-bd: #f9a8d4;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading);
+  word-break: keep-all;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+h1 {
+  font-size: var(--text-xl);
+  line-height: 1.3;
+  margin: 0 0 var(--space-4);
+}
+
+a {
+  color: var(--color-link);
+}
+
+/* 포커스 표시: 키보드 사용자를 위해 모든 조작 요소에 뚜렷하게 보이게 한다. 없애지 않는다. */
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* 본문으로 건너뛰기: 평소에는 화면 밖에 두고 포커스를 받으면 나타난다 */
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-text);
+  color: var(--color-bg);
+  border-radius: var(--radius);
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+/* ── 머리글 ───────────────────────────────────────── */
+.site-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-title {
+  margin: 0;
+  padding: var(--space-3) 0;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.site-title__note {
+  margin-left: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  color: var(--color-text-muted);
+  letter-spacing: 0.01em;
+}
+
+/* F8 샘플 데이터 고지 배너: 모든 화면 상단에 항상 보인다 */
+.sample-notice {
+  background: var(--color-notice-bg);
+  border-top: 2px solid var(--color-notice-border);
+  border-bottom: 2px solid var(--color-notice-border);
+  color: var(--color-notice-text);
+}
+
+.sample-notice .container {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+.sample-notice__title {
+  margin-right: var(--space-2);
+}
+
+.sample-notice__text {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading);
+}
+
+/* ── 본문 ─────────────────────────────────────────── */
+/* .container의 좌우 여백과 겹치지 않도록 위아래 여백만 지정한다 (.container보다 뒤에 선언) */
+.site-main {
+  padding-top: var(--space-8);
+  padding-bottom: var(--space-8);
+}
+
+.site-main:focus {
+  outline: none; /* 건너뛰기 링크로 이동했을 때 본문 전체에 테두리가 생기지 않게 함 */
+}
+
+/* ── 바닥글 ───────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.site-footer p {
+  margin: 0;
+  padding: var(--space-4) 0;
+}
+
+/* ── 통합 목록 (P03) ─────────────────────────────── */
+
+/* 목록 헤더 */
+.list-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.list-heading {
+  margin: 0;
+  flex-shrink: 0;
+  font-size: var(--text-lg);  /* 섹션 레이블로 사용 — 사이트 제목보다 작게 */
+  font-weight: 700;
+}
+
+.list-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.list-count {
+  font-weight: 700;
+  color: var(--color-link);  /* 결과 건수를 링크 색으로 강조 */
+}
+
+/* ── 게시물 카드 목록 ─────────────────────────────── */
+.item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);  /* 카드 간격 */
+}
+
+.item-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  box-shadow: var(--shadow-card);
+  transition: border-color 0.1s, background 0.1s;
+}
+
+.item-card:has(a:hover),
+.item-card:has(a:focus-visible) {
+  border-color: var(--color-link);
+  background: var(--color-surface-hover);
+}
+
+/* 제목: 카드에서 가장 먼저, 가장 크게 */
+.item-card__title {
+  font-size: var(--text-base-lg);  /* 1.0625rem — 본문보다 약간 크게 */
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 var(--space-2);
+}
+
+.item-card__title a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.item-card__title a:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+/* 배지 + 날짜 메타 행: 제목 아래에 출처와 게시일 */
+.item-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+/* 출처 배지: 반드시 텍스트 라벨 포함 (색만으로 구분 금지, CLAUDE.md 5절) */
+.source-badge {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 2px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  border: 1px solid;
+  flex-shrink: 0;
+}
+
+.source-badge--haksa   { background: var(--source-haksa-bg);   color: var(--source-haksa-text);   border-color: var(--source-haksa-bd); }
+.source-badge--general { background: var(--source-general-bg); color: var(--source-general-text); border-color: var(--source-general-bd); }
+.source-badge--dept    { background: var(--source-dept-bg);    color: var(--source-dept-text);    border-color: var(--source-dept-bd); }
+.source-badge--scholar { background: var(--source-scholar-bg); color: var(--source-scholar-text); border-color: var(--source-scholar-bd); }
+.source-badge--career  { background: var(--source-career-bg);  color: var(--source-career-text);  border-color: var(--source-career-bd); }
+.source-badge--program { background: var(--source-program-bg); color: var(--source-program-text); border-color: var(--source-program-bd); }
+
+.item-card__date {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* 요약 */
+.item-card__summary {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: var(--leading);
+}
+
+/* 게시 부서 */
+.item-card__dept {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── 페이지네이션 (P03) ───────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.pagination__btn,
+.pagination__page-btn {
+  font-family: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.pagination__btn {
+  padding: var(--space-2) var(--space-4);
+}
+
+.pagination__btn:hover:not(:disabled) {
+  background: var(--color-surface);
+  border-color: var(--color-link);
+}
+
+.pagination__btn:disabled {
+  color: var(--color-text-muted);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination__pages {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pagination__page-btn {
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination__page-btn:hover:not(.is-current) {
+  background: var(--color-surface);
+  border-color: var(--color-link);
+}
+
+.pagination__page-btn.is-current {
+  background: var(--color-link);
+  color: #ffffff;
+  border-color: var(--color-link);
+  font-weight: 700;
+  cursor: default;
+}
+
+/* 현재 페이지 버튼 포커스 링: 배경(파랑)과 같은 색이 되지 않도록 흰색 아웃라인 사용 */
+.pagination__page-btn.is-current:focus-visible {
+  outline-color: #ffffff;
+}
+
+/* ── 검색 폼 (P04 · F3) ─────────────────────────── */
+.search-form {
+  margin-bottom: var(--space-6);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-border);  /* 검색 영역을 필터+결과 영역과 구분 */
+}
+
+.search-form__label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: var(--space-2);
+}
+
+.search-form__row {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.search-form__input {
+  flex: 1;
+  padding: var(--space-3) var(--space-4);  /* 기존보다 넉넉하게 */
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-base);
+  font-family: inherit;
+  color: var(--color-text);
+  background: var(--color-bg);
+  transition: border-color 0.1s;
+}
+
+.search-form__input:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 1px;
+  border-color: var(--color-link);
+}
+
+.search-form__btn {
+  padding: var(--space-3) var(--space-6);  /* 입력창 높이에 맞춤 */
+  background: var(--color-link);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--text-base);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.search-form__btn:hover {
+  background: var(--color-link-hover);
+}
+
+/* ── 2단 레이아웃 (P04) ─────────────────────────── */
+.content-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--space-8);
+  align-items: start;
+}
+
+/* ── 필터 사이드바 (P04 · F4) ───────────────────── */
+.filter-sidebar {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+}
+
+.filter-group {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.filter-group + .filter-group {
+  margin-top: var(--space-5);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.filter-group__legend {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-3);
+  padding: 0;
+}
+
+.filter-group__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.filter-item__label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  font-size: var(--text-sm);
+  line-height: 1.4;
+  user-select: none;
+}
+
+.filter-item__checkbox,
+.filter-item__radio {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+  accent-color: var(--color-link);
+}
+
+/* 필터 사이드바 내 배지: 텍스트는 숨기고 색 표시자(원형)로만 사용 */
+/* 텍스트 라벨은 오른쪽 nameSpan이 제공하므로 색 구분 역할만 담당 */
+.filter-sidebar .source-badge {
+  font-size: 0;
+  line-height: 0;
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.filter-item__count {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+/* ── 조건 칩 (P04 · F4) ─────────────────────────── */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.active-filters:empty {
+  display: none;
+}
+
+.active-filters:not(:empty) {
+  margin-bottom: var(--space-4);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.25rem var(--space-1) 0.25rem var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 100px;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+
+.chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+  border-radius: 50%;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.chip__remove:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.btn-reset-all {
+  padding: 0.3rem var(--space-3);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 100px;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-family: inherit;
+}
+
+.btn-reset-all:hover {
+  border-color: var(--color-text-muted);
+  color: var(--color-text);
+}
+
+/* ── 결과 없음 복구 (P06 · F7) ─────────────────── */
+.empty-state {
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.empty-state__title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin: 0 0 var(--space-4);
+}
+
+.empty-state__conditions {
+  margin: 0 auto var(--space-6);
+  width: fit-content;
+  font-size: var(--text-sm);
+  text-align: left;
+}
+
+.empty-state__conditions div {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  align-items: baseline;
+}
+
+.empty-state__conditions dt {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.empty-state__conditions dd {
+  margin: 0;
+}
+
+.empty-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.btn-recovery {
+  padding: var(--space-2) var(--space-5);
+  background: var(--color-link);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--text-sm);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-recovery:hover {
+  background: var(--color-link-hover);
+}
+
+.btn-recovery--reset {
+  background: none;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.btn-recovery--reset:hover {
+  border-color: var(--color-text-muted);
+  color: var(--color-text);
+  background: none;
+}
+
+/* ── 없는 게시물 (P06 · F7) ─────────────────────── */
+.not-found__desc {
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-6);
+}
+
+/* ── 상세 화면 (P05 · F5) ───────────────────────── */
+.detail-back {
+  display: inline-block;
+  margin-bottom: var(--space-6);
+  color: var(--color-link);
+  font-size: var(--text-sm);
+  text-decoration: none;
+}
+
+.detail-back:hover {
+  text-decoration: underline;
+}
+
+.detail-article {
+  max-width: 46rem;  /* 한국어 본문 가독성 최적 폭 */
+}
+
+.detail-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.detail-date {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.detail-heading {
+  font-size: var(--text-xl);
+  line-height: 1.25;
+  margin: 0 0 var(--space-2);
+}
+
+.detail-dept {
+  margin: 0 0 var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.detail-body {
+  margin-bottom: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+  line-height: var(--leading-relaxed);  /* 본문 가독성 */
+}
+
+.detail-body p {
+  margin: 0 0 var(--space-5);  /* 단락 간격 */
+}
+
+.detail-body p:last-child {
+  margin-bottom: 0;
+}
+
+.detail-attachments {
+  margin-bottom: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.detail-section-title {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+}
+
+.detail-attach-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.detail-attach-sample {
+  margin-left: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.detail-original {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.btn-original {
+  padding: var(--space-2) var(--space-6);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: var(--text-base);
+  font-family: inherit;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* ── 반응형 ───────────────────────────────────────── */
+
+/* 중간 폭(960px): 사이드바 약간 좁히기 */
+@media (max-width: 960px) {
+  .content-layout {
+    grid-template-columns: 190px 1fr;
+    gap: var(--space-6);
+  }
+}
+
+/* 좁은 화면(720px): 사이드바를 위로 올려 1단 레이아웃 */
+@media (max-width: 720px) {
+  .content-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 움직임 감소 환경 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

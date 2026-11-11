@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>캠퍼스 정보 통합 탐색 (HCI 프로토타입)</title>
+  <meta name="description" content="여러 학교 정보 출처를 한 화면에서 탐색하는 HCI 수업 과제용 프로토타입입니다. 모든 게시물은 샘플 데이터입니다.">
+  <!-- GitHub Pages 하위 경로(/campus-info-finder/)에서도 동작하도록 모든 경로는 상대경로로 쓴다 -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+
+  <header class="site-header">
+    <div class="container">
+      <p class="site-title">캠퍼스 정보 통합 탐색 <span class="site-title__note">HCI 프로토타입</span></p>
+    </div>
+    <!-- F8 샘플 데이터 고지: 모든 화면에 항상 표시한다. 삭제·숨김 금지 (CLAUDE.md 0절) -->
+    <section class="sample-notice" aria-label="샘플 데이터 안내">
+      <div class="container">
+        <p class="sample-notice__text"><strong class="sample-notice__title">샘플 데이터 안내</strong> 이 사이트의 모든 게시물은 수업 과제를 위해 만든 샘플 데이터입니다. 실제 학교 시스템과 연결되어 있지 않으며, 실제 공지 내용이 아닙니다. 샘플 기준일: <span id="sample-ref-date">2026-11-10</span></p>
+      </div>
+    </section>
+  </header>
+
+  <main id="main" class="container site-main" tabindex="-1">
+
+    <!-- 목록 화면 (F1~F4) -->
+    <div id="list-view">
+      <!-- 키워드 검색 (F3) -->
+      <form class="search-form" id="search-form" role="search">
+        <label for="search-input" class="search-form__label">키워드 검색</label>
+        <div class="search-form__row">
+          <input type="search" id="search-input" class="search-form__input"
+                 placeholder="제목, 요약, 본문에서 검색" autocomplete="off">
+          <button type="submit" class="search-form__btn">검색</button>
+        </div>
+      </form>
+
+      <!-- 2단 레이아웃: 필터 사이드바 + 목록 -->
+      <div class="content-layout">
+
+        <!-- 필터 사이드바 (F4) -->
+        <aside class="filter-sidebar" aria-label="검색 필터">
+          <fieldset class="filter-group">
+            <legend class="filter-group__legend">출처</legend>
+            <ul class="filter-group__list" id="source-filter-list">
+              <!-- app.js로 렌더링 -->
+            </ul>
+          </fieldset>
+          <fieldset class="filter-group">
+            <legend class="filter-group__legend">기간</legend>
+            <ul class="filter-group__list" id="period-filter-list">
+              <!-- app.js로 렌더링 -->
+            </ul>
+          </fieldset>
+        </aside>
+
+        <!-- 목록 영역 -->
+        <div class="results-panel">
+          <!-- 목록 헤더 -->
+          <div class="list-header">
+            <h1 id="list-heading" tabindex="-1" class="list-heading">통합 정보 목록</h1>
+            <div class="list-meta">
+              <span id="result-count" aria-live="polite" aria-atomic="true" class="list-count"></span>
+              <span class="list-sort" aria-label="정렬 기준: 최신순">최신순</span>
+            </div>
+          </div>
+
+          <!-- 적용 중인 조건 칩 (F4) -->
+          <div class="active-filters" id="active-filters" aria-label="적용 중인 필터 조건">
+            <!-- app.js로 렌더링 -->
+          </div>
+
+          <!-- 게시물 목록 -->
+          <ul class="item-list" id="item-list" aria-label="통합 정보 목록">
+            <!-- app.js로 렌더링 -->
+          </ul>
+
+          <!-- 결과 없음 (F7 · P06): app.js로 렌더링 -->
+          <div class="empty-state" id="empty-state" hidden></div>
+
+          <!-- 페이지네이션 -->
+          <nav class="pagination" id="pagination" aria-label="페이지 이동">
+            <!-- app.js로 렌더링 -->
+          </nav>
+        </div>
+
+      </div>
+    </div><!-- /#list-view -->
+
+    <!-- 상세 화면 (F5): app.js로 렌더링 -->
+    <div id="detail-view" hidden></div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>휴먼컴퓨터인터페이스(2026-2) 개인 프로젝트 과제용 프로토타입</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

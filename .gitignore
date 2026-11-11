@@ -1,0 +1,14 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 편집기
+.vscode/
+.idea/
+
+# Claude Code 개인 설정 (공유용 설정은 .claude/settings.json)
+.claude/settings.local.json
+
+# Node
+node_modules/
